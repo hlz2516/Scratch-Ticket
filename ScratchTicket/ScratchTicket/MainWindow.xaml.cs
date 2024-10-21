@@ -17,9 +17,14 @@ namespace ScratchTicket
             InitializeComponent();
         }
 
-        public MainWindow(ILogger _logger)
+        public MainWindow(ILogger _logger):this()
         {
             logger = _logger;
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            App.Current.Shutdown();
         }
     }
 }

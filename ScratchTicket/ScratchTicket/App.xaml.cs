@@ -1,6 +1,8 @@
 ﻿using Autofac;
 using Autofac.Core;
 using NLog;
+using ScratchTicket.Helpers;
+using ScratchTicket.ORM;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -25,6 +27,7 @@ namespace ScratchTicket
             // 注册窗口和服务
             builder.Register(c=>LogManager.GetCurrentClassLogger()).As<ILogger>();
             builder.RegisterType<Login>().SingleInstance(); //注册登录窗口，每次加载实例时都是返回同一个实例
+            builder.RegisterType<LoginViewModel>().SingleInstance();
             builder.RegisterType<MainWindow>().SingleInstance();
 
             Container = builder.Build();
@@ -36,8 +39,8 @@ namespace ScratchTicket
 
         protected override void OnExit(ExitEventArgs e)
         {
-            base.OnExit(e); 
             Container?.Dispose();
+            base.OnExit(e); 
         }
     }
 }

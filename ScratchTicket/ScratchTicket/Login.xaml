@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ScratchTicket"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:helper="clr-namespace:ScratchTicket.Helpers"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="登录" Height="300" Width="400"
+        Title="登录" Height="300" Width="400" Closed="Window_Closed"
         WindowStyle="SingleBorderWindow" ResizeMode="CanMinimize" >
     <Window.Resources>
         <Style TargetType="Button">
@@ -71,11 +72,13 @@
                       IsEditable="True" SelectedValuePath="Account" DisplayMemberPath="AccountWidthName" ItemsSource="{Binding Accounts}" 
                       Text="{Binding Account}" DropDownClosed="cbbAccount_SelectionChanged" DropDownOpened="cbbAccount_DropDownOpened"
                       />
-            <PasswordBox x:Name="pbPwd" PasswordChar="*" Password="123" Grid.Column="1" HorizontalAlignment="Stretch"  Grid.Row="1" VerticalAlignment="Center" FontSize="24"  />
+            <PasswordBox x:Name="pbPwd" PasswordChar="*" Grid.Column="1" HorizontalAlignment="Stretch"  
+                         Grid.Row="1" VerticalAlignment="Center" FontSize="24" helper:PasswordBoxHelper.Attach="True"
+                         helper:PasswordBoxHelper.Password="{Binding Password,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
             <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button x:Name="btnGenAcct" Content="生成账号" Width="80" Height="30" />
+                <Button x:Name="btnGenAcct" Content="生成账号" Width="80" Height="30" Command="{Binding GenerateCommand}" />
                 <Border Width="30" />
-                <Button x:Name="btnLogin" Content="登录" Width="80" Height="30" />
+                <Button x:Name="btnLogin" Content="登录" Width="80" Height="30" Command="{Binding LoginCommand}" />
             </StackPanel>
         </Grid>
     </Grid>
