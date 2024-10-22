@@ -7,7 +7,20 @@
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" 
         Closed="Window_Closed"
         Title="MainWindow" Height="800" Width="1200">
+    <Window.Resources>
+        
+    </Window.Resources>
     <Grid>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="698*"/>
+            <RowDefinition Height="87*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Grid.Row="1" VerticalAlignment="Center">
+            <Image Source="Resources/金币2.png" Width="64" Height="64" Margin="20 0 4 0"/>
+            <TextBlock x:Name="tbAssets" Text="100" FontSize="32" FontWeight="Bold" Foreground="DarkOrange" VerticalAlignment="Center" Margin="0 0 10 0" />
+            <Canvas Width="400" Height="{Binding ElementName=tbAssets,Path=ActualHeight}">
+                <TextBlock Text="+100" Canvas.Left="0" Canvas.Top="0" FontSize="32" Foreground="LightGreen" />
+            </Canvas>
+        </StackPanel>
     </Grid>
 </Window>
