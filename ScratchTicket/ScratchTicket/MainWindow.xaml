@@ -4,22 +4,48 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ScratchTicket"
+        xmlns:ctrls="clr-namespace:ScratchTicket.Controls"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" 
         Closed="Window_Closed"
         Title="MainWindow" Height="800" Width="1200">
     <Window.Resources>
-        
+
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="698*"/>
             <RowDefinition Height="87*"/>
         </Grid.RowDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="135*"/>
+                <RowDefinition Height="82*"/>
+                <RowDefinition Height="138*"/>
+                <RowDefinition Height="63*"/>
+                <RowDefinition Height="143*"/>
+                <RowDefinition Height="137*"/>
+            </Grid.RowDefinitions>
+            <Grid.Background>
+                <ImageBrush ImageSource="/Resources/bookshelves.png" />
+            </Grid.Background>
+            <TextBlock HorizontalAlignment="Center" TextWrapping="NoWrap" Text="商 店" VerticalAlignment="Center" FontSize="64" Height="81" Width="146" />
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,0,0,5">
+                <ctrls:CardHolder x:Name="lowCard" Price="20" Source="/Resources/cardback1.jpg" Width="100" CardClick="CardHolder_CardClick"  />
+                <Border Width="120" />
+                <ctrls:CardHolder x:Name="midCard" Price="40" Source="/Resources/cardback2.jpg" Width="100" CardClick="CardHolder_CardClick"  />
+                <Border Width="120" />
+                <ctrls:CardHolder x:Name="highCard" Price="60" Source="/Resources/cardback3.jpg" Width="100" CardClick="CardHolder_CardClick"  />
+            </StackPanel>
+        </Grid>
         <StackPanel Orientation="Horizontal" Grid.Row="1" VerticalAlignment="Center">
-            <Image Source="Resources/金币2.png" Width="64" Height="64" Margin="20 0 4 0"/>
+            <Image Source="/Resources/Coin.png" Width="64" Height="64" Margin="20 0 4 0" MouseDown="Image_MouseDown"/>
             <TextBlock x:Name="tbAssets" Text="100" FontSize="32" FontWeight="Bold" Foreground="DarkOrange" VerticalAlignment="Center" Margin="0 0 10 0" />
-            <Canvas Width="400" Height="{Binding ElementName=tbAssets,Path=ActualHeight}">
-                <TextBlock Text="+100" Canvas.Left="0" Canvas.Top="0" FontSize="32" Foreground="LightGreen" />
+            <Canvas x:Name="cvs1" Width="400" Height="{Binding ElementName=tbAssets,Path=ActualHeight}" Opacity="0" >
+                <TextBlock x:Name="txtVar" Text="100" Canvas.Left="0" Canvas.Top="{Binding ElementName=cvs1,Path=ActualHeight}" FontSize="32" Foreground="LightGreen">
+                    <!--<TextBlock.RenderTransform>
+                        <TranslateTransform x:Name="tt" X="0" Y="0" />
+                    </TextBlock.RenderTransform>-->
+                </TextBlock>
             </Canvas>
         </StackPanel>
     </Grid>

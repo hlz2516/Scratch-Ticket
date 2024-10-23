@@ -33,7 +33,7 @@ namespace ScratchTicket
             Container = builder.Build();
 
             // 显示登录窗口
-            var login = Container.Resolve<Login>();
+            var login = Container.Resolve<MainWindow>();
             login.Show();
         }
 
