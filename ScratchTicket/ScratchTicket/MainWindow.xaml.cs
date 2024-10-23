@@ -1,9 +1,10 @@
-﻿using Autofac;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using NLog;
 using ScratchTicket.Controls;
+using ScratchTicket.ORM;
 using System;
+using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
@@ -32,7 +33,7 @@ namespace ScratchTicket
             tbAssets.Text = curAsset.ToString("F2");
         }
 
-        public MainWindow(ILogger _logger):this()
+        public MainWindow(ILogger _logger) : this()
         {
             logger = _logger;
         }
@@ -137,6 +138,26 @@ namespace ScratchTicket
                 txtVar.Text = (-card.Price).ToString("F2");
                 StartAssetChangeAnimation(-card.Price);
             }
+        }
+    }
+
+    public class MainWindowViewModel : ObservableObject
+    {
+        private readonly ILogger logger;
+
+        private double capital;
+        public double Capital
+        {
+            get { return capital; }
+            set { SetProperty(ref capital, value); }
+        }
+
+        ObservableCollection<ObservableCardBundle> bundles;
+
+        public MainWindowViewModel(ILogger _logger)
+        {
+            logger = _logger;
+            //获取当前用户，查找其资产和所有的卡包，卡包赋给bundles
         }
     }
 }

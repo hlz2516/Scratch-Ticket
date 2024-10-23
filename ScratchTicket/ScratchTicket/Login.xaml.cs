@@ -95,7 +95,8 @@ namespace ScratchTicket
             {
                 Account = Guid.NewGuid().ToString().Substring(0,12),
                 Name = ChineseWordsGenerator.GenerateChineseWord(5),
-                Password = "123456"
+                Password = "123456",
+                Capital = new Random().Next(0, 1000) + 50,
             };
             using (var dc = new MyDbContext())
             {

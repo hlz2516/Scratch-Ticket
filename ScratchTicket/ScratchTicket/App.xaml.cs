@@ -29,6 +29,7 @@ namespace ScratchTicket
             builder.RegisterType<Login>().SingleInstance(); //注册登录窗口，每次加载实例时都是返回同一个实例
             builder.RegisterType<LoginViewModel>().SingleInstance();
             builder.RegisterType<MainWindow>().SingleInstance();
+            builder.RegisterType<Test>().SingleInstance();
 
             Container = builder.Build();
 

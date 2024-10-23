@@ -5,11 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ScratchTicket"
         xmlns:ctrls="clr-namespace:ScratchTicket.Controls"
+        xmlns:cvt="clr-namespace:ScratchTicket.Converters"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" 
         Closed="Window_Closed"
         Title="MainWindow" Height="800" Width="1200">
     <Window.Resources>
-
+        <cvt:Bool2VisibilityConverter x:Key="b2v" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -29,13 +30,26 @@
                 <ImageBrush ImageSource="/Resources/bookshelves.png" />
             </Grid.Background>
             <TextBlock HorizontalAlignment="Center" TextWrapping="NoWrap" Text="商 店" VerticalAlignment="Center" FontSize="64" Height="81" Width="146" />
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,0,0,5">
+            <UniformGrid Grid.Row="2" Rows="1" Columns="3" Margin="50,0,50,0">
                 <ctrls:CardHolder x:Name="lowCard" Price="20" Source="/Resources/cardback1.jpg" Width="100" CardClick="CardHolder_CardClick"  />
-                <Border Width="120" />
                 <ctrls:CardHolder x:Name="midCard" Price="40" Source="/Resources/cardback2.jpg" Width="100" CardClick="CardHolder_CardClick"  />
-                <Border Width="120" />
                 <ctrls:CardHolder x:Name="highCard" Price="60" Source="/Resources/cardback3.jpg" Width="100" CardClick="CardHolder_CardClick"  />
-            </StackPanel>
+            </UniformGrid>
+            <ItemsControl x:Name="ugPurchased" Grid.Row="4" Margin="100,0,100,0">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid  Rows="1" IsItemsHost="True">
+
+                        </UniformGrid>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ctrls:CardHolder Width="50" Height="100" Source="/Resources/cardback1.jpg" HidePrice="True" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
         </Grid>
         <StackPanel Orientation="Horizontal" Grid.Row="1" VerticalAlignment="Center">
             <Image Source="/Resources/Coin.png" Width="64" Height="64" Margin="20 0 4 0" MouseDown="Image_MouseDown"/>

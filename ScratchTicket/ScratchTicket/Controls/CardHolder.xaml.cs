@@ -44,7 +44,7 @@ namespace ScratchTicket.Controls
             DependencyProperty.Register("Source", typeof(ImageSource), typeof(CardHolder), new PropertyMetadata(null));
 
 
-        [TypeConverter(typeof(Visibility2BoolConverter))]
+        //[TypeConverter(typeof(Bool2VisibilityConverter))]
         public bool HidePrice
         {
             get { return (bool)GetValue(HidePriceProperty); }
@@ -53,7 +53,21 @@ namespace ScratchTicket.Controls
 
         // Using a DependencyProperty as the backing store for HidePrice.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty HidePriceProperty =
-            DependencyProperty.Register("HidePrice", typeof(bool), typeof(CardHolder), new PropertyMetadata(false));
+            DependencyProperty.Register("HidePrice", typeof(bool), typeof(CardHolder), new PropertyMetadata(false,new PropertyChangedCallback(HidePriceChanged)));
+
+        private static void HidePriceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            bool hide = (bool)e.NewValue;
+            CardHolder holder = (CardHolder)d;
+            if (hide)
+            {
+                Grid.SetRowSpan(holder.card, 2);
+            }
+            else
+            {
+                Grid.SetRowSpan(holder.card, 1);
+            }
+        }
 
         // 定义一个 RoutedEvent
         public static readonly RoutedEvent CardClickEvent = EventManager.RegisterRoutedEvent(

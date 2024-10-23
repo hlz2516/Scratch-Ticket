@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,6 +41,39 @@ namespace ScratchTicket.ORM
         public string AccountWidthName
         {
             get { return $"{userInfo.Account}({userInfo.Name})"; }
+        }
+    }
+
+    public partial class ObservableCardBundle:ObservableObject
+    {
+        private readonly CardBundle cardBundle;
+        public ObservableCardBundle(CardBundle _cardBundle)
+        {
+            cardBundle = _cardBundle;
+        }
+
+        public int ID
+        {
+            get => cardBundle.ID;
+            set => SetProperty(cardBundle.ID, value, cardBundle,(u,p)=>u.ID = p);
+        }
+
+        public CardBundleType CardType
+        {
+            get => cardBundle.CardType;
+            set => SetProperty(cardBundle.CardType, value, cardBundle, (u, p) => u.CardType = p);
+        }
+
+        public int TotalCount
+        {
+            get => cardBundle.TotalCount;
+            set => SetProperty(cardBundle.TotalCount, value, cardBundle, (u, p) => u.TotalCount = p);
+        }
+
+        public string Background
+        {
+            get => cardBundle.Background; 
+            set => SetProperty(cardBundle.Background, value, cardBundle, (u, p) => u.Background = p);
         }
     }
 }

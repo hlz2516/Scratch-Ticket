@@ -21,19 +21,19 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        <cvt:Visibility2BoolConverter x:Key="v2b" />
+        <cvt:Bool2VisibilityConverter x:Key="b2v" />
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="5*"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Border Style="{StaticResource cardback}" MouseDown="Border_MouseDown">
+        <Border x:Name="card" Style="{StaticResource cardback}" MouseDown="Border_MouseDown">
             <Border.Background>
                 <ImageBrush ImageSource="{Binding Source}" />
             </Border.Background>
         </Border>
-        <Viewbox Grid.Row="1" Stretch="Uniform" Visibility="{Binding HidePrice,Converter={StaticResource v2b}}">
+        <Viewbox x:Name="priceContainer" Grid.Row="1" Stretch="Uniform" Visibility="{Binding HidePrice,Converter={StaticResource ResourceKey=b2v}}">
             <TextBlock Grid.Row="1" Text="{Binding Price,StringFormat=¥{0:F2}}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="DarkOrange" />
         </Viewbox>
     </Grid>
