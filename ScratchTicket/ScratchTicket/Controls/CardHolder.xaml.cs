@@ -1,4 +1,5 @@
 ﻿using ScratchTicket.Converters;
+using ScratchTicket.ORM;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,6 +23,29 @@ namespace ScratchTicket.Controls
     /// </summary>
     public partial class CardHolder : UserControl
     {
+        public CardBundleType BundleType
+        {
+            get { return (CardBundleType)GetValue(BundleTypeProperty); }
+            set { SetValue(BundleTypeProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for BundleType.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty BundleTypeProperty =
+            DependencyProperty.Register("BundleType", typeof(CardBundleType), typeof(CardHolder), new PropertyMetadata());
+
+
+        public string Guid
+        {
+            get { return (string)GetValue(GuidProperty); }
+            set { SetValue(GuidProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Guid.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty GuidProperty =
+            DependencyProperty.Register("Guid", typeof(string), typeof(CardHolder), new PropertyMetadata());
+
+
+
         [TypeConverter(typeof(LengthConverter))]
         public double Price
         {
@@ -83,7 +107,7 @@ namespace ScratchTicket.Controls
         public CardHolder()
         {
             InitializeComponent();
-            this.DataContext = this;
+            container.DataContext = this;
         }
 
         private void Border_MouseDown(object sender, MouseButtonEventArgs e)

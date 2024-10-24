@@ -6,11 +6,14 @@
         xmlns:local="clr-namespace:ScratchTicket"
         xmlns:ctrls="clr-namespace:ScratchTicket.Controls"
         xmlns:cvt="clr-namespace:ScratchTicket.Converters"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" 
-        Closed="Window_Closed"
+        Closed="Window_Closed" 
+        d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         Title="MainWindow" Height="800" Width="1200">
     <Window.Resources>
         <cvt:Bool2VisibilityConverter x:Key="b2v" />
+        <cvt:VariableConverter x:Key="var" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -30,32 +33,55 @@
                 <ImageBrush ImageSource="/Resources/bookshelves.png" />
             </Grid.Background>
             <TextBlock HorizontalAlignment="Center" TextWrapping="NoWrap" Text="商 店" VerticalAlignment="Center" FontSize="64" Height="81" Width="146" />
-            <UniformGrid Grid.Row="2" Rows="1" Columns="3" Margin="50,0,50,0">
-                <ctrls:CardHolder x:Name="lowCard" Price="20" Source="/Resources/cardback1.jpg" Width="100" CardClick="CardHolder_CardClick"  />
-                <ctrls:CardHolder x:Name="midCard" Price="40" Source="/Resources/cardback2.jpg" Width="100" CardClick="CardHolder_CardClick"  />
-                <ctrls:CardHolder x:Name="highCard" Price="60" Source="/Resources/cardback3.jpg" Width="100" CardClick="CardHolder_CardClick"  />
-            </UniformGrid>
-            <ItemsControl x:Name="ugPurchased" Grid.Row="4" Margin="100,0,100,0">
+            <!--<UniformGrid Grid.Row="2" Rows="1" Columns="3" Margin="50,0,50,0">
+                <ctrls:CardHolder x:Name="lowCard" Price="20" Source="/Resources/cardback1.jpg" Width="100">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="CardClick">
+                            <i:InvokeCommandAction Command="{Binding PurchaseCommand}" CommandParameter="{Binding ElementName=lowCard}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ctrls:CardHolder>
+                <ctrls:CardHolder x:Name="midCard" Price="40" Source="/Resources/cardback2.jpg" Width="100"  />
+                <ctrls:CardHolder x:Name="highCard" Price="60" Source="/Resources/cardback3.jpg" Width="100" />
+            </UniformGrid>-->
+            <ItemsControl x:Name="icGoods" Grid.Row="2" Margin="50,0,50,0" ItemsSource="{Binding Goods}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <UniformGrid  Rows="1" IsItemsHost="True">
-
-                        </UniformGrid>
+                        <UniformGrid Rows="1" IsItemsHost="True" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <ctrls:CardHolder Width="50" Height="100" Source="/Resources/cardback1.jpg" HidePrice="True" />
+                        <ctrls:CardHolder Width="100" BundleType="{Binding CardType}" Price="{Binding Price}" 
+                                          Source="{Binding Background}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="CardClick">
+                                    <i:InvokeCommandAction Command="{Binding PurchaseCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ctrls:CardHolder}}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </ctrls:CardHolder>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <ItemsControl x:Name="icPurchased" Grid.Row="4" Margin="100,0,100,0" ItemsSource="{Binding Purchased}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid  Rows="1" IsItemsHost="True" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ctrls:CardHolder Width="100" Guid="{Binding Guid}" Source="{Binding Background}" HidePrice="True" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
         </Grid>
         <StackPanel Orientation="Horizontal" Grid.Row="1" VerticalAlignment="Center">
-            <Image Source="/Resources/Coin.png" Width="64" Height="64" Margin="20 0 4 0" MouseDown="Image_MouseDown"/>
-            <TextBlock x:Name="tbAssets" Text="100" FontSize="32" FontWeight="Bold" Foreground="DarkOrange" VerticalAlignment="Center" Margin="0 0 10 0" />
+            <Image Source="/Resources/Coin.png" Width="64" Height="64" Margin="20 0 4 0" />
+            <TextBlock x:Name="tbAssets" Text="{Binding Capital}" FontSize="32" FontWeight="Bold" Foreground="DarkOrange" VerticalAlignment="Center" Margin="0 0 10 0" />
             <Canvas x:Name="cvs1" Width="400" Height="{Binding ElementName=tbAssets,Path=ActualHeight}" Opacity="0" >
-                <TextBlock x:Name="txtVar" Text="100" Canvas.Left="0" Canvas.Top="{Binding ElementName=cvs1,Path=ActualHeight}" FontSize="32" Foreground="LightGreen">
+                <TextBlock x:Name="txtVar" Text="{Binding Variable,Converter={StaticResource ResourceKey=var}}" Canvas.Left="0" Canvas.Top="{Binding ElementName=cvs1,Path=ActualHeight}" FontSize="32" Foreground="LightGreen">
                     <!--<TextBlock.RenderTransform>
                         <TranslateTransform x:Name="tt" X="0" Y="0" />
                     </TextBlock.RenderTransform>-->

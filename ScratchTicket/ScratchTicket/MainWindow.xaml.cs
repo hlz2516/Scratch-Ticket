@@ -1,12 +1,16 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using NLog;
 using ScratchTicket.Controls;
+using ScratchTicket.Helpers;
 using ScratchTicket.ORM;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using Autofac;
+using CommunityToolkit.Mvvm.Input;
 
 namespace ScratchTicket
 {
@@ -15,7 +19,6 @@ namespace ScratchTicket
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly ILogger logger;
         private Storyboard storyboard1;
         public event Action<double> AssetChanged;
 
@@ -23,19 +26,8 @@ namespace ScratchTicket
         {
             InitializeComponent();
             AssetChangeAnimationInit();
-            AssetChanged += MainWindow_AssetChanged;
-        }
-
-        private void MainWindow_AssetChanged(double obj)
-        {
-            double curAsset = double.Parse(tbAssets.Text);
-            curAsset += obj;
-            tbAssets.Text = curAsset.ToString("F2");
-        }
-
-        public MainWindow(ILogger _logger) : this()
-        {
-            logger = _logger;
+            //AssetChanged += MainWindow_AssetChanged;
+            this.DataContext = App.Container.Resolve<MainWindowViewModel>();
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -48,13 +40,13 @@ namespace ScratchTicket
             storyboard1 = new Storyboard();
             var duration = TimeSpan.FromMilliseconds(250);
             DoubleAnimation doubleAnimation1 = new DoubleAnimation();
-            doubleAnimation1.Duration = new Duration(duration); // 翻页动画持续时间
+            doubleAnimation1.Duration = new Duration(duration);
             storyboard1.Children.Add(doubleAnimation1);
 
             DoubleAnimation doubleAnimation2 = new DoubleAnimation();
             storyboard1.Children.Add(doubleAnimation2);
             doubleAnimation2.BeginTime = duration;
-            doubleAnimation2.Duration = duration; // 翻页动画持续时间
+            doubleAnimation2.Duration = duration;
 
             Storyboard.SetTarget(doubleAnimation1, txtVar);
             Storyboard.SetTargetProperty(doubleAnimation1, new PropertyPath("(Canvas.Top)"));
@@ -124,21 +116,6 @@ namespace ScratchTicket
 
             storyboard1.Begin();
         }
-
-        private void Image_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            //StartAssetChangeAnimation(-100);
-        }
-
-        private void CardHolder_CardClick(object sender, RoutedEventArgs e)
-        {
-            var card = sender as CardHolder;
-            if (card != null)
-            {
-                txtVar.Text = (-card.Price).ToString("F2");
-                StartAssetChangeAnimation(-card.Price);
-            }
-        }
     }
 
     public class MainWindowViewModel : ObservableObject
@@ -149,15 +126,132 @@ namespace ScratchTicket
         public double Capital
         {
             get { return capital; }
-            set { SetProperty(ref capital, value); }
+            set 
+            {
+                if (Math.Abs(capital -value) > 0.01)
+                {
+                    Variable = value - capital;
+                }
+                SetProperty(ref capital, value); 
+            }
         }
 
-        ObservableCollection<ObservableCardBundle> bundles;
+        private double variable;
+        public double Variable
+        {
+            get => variable;
+            set => SetProperty(ref variable, value);
+        }
 
-        public MainWindowViewModel(ILogger _logger)
+        public ObservableCollection<ObservableCardBundle> Purchased { get; private set; }
+        public ObservableCollection<ObservableCardBundle> Goods { get; private set; }
+
+        public MainWindowViewModel()
+        {
+            Goods = new ObservableCollection<ObservableCardBundle>();
+            Purchased = new ObservableCollection<ObservableCardBundle>();
+            //绑定命令
+            PurchaseCommand = new RelayCommand<object>(PurchaseCard);
+            var loginedUser = UserSession.LoginedUser;
+            Capital = loginedUser.Capital;
+            using (var dc = new MyDbContext())
+            {
+                try
+                {
+                    //查找当前用户的资产和所有的卡包，卡包赋给bundles
+                    var cardBundles = dc.PurchasedCardBundles.Where(x => x.AccountID == loginedUser.Account)
+                        .Join(dc.CardBundles, p => p.CardBundleID, c => c.Guid, (p, c) => c);
+                    foreach (var card in cardBundles)
+                    {
+                        Purchased.Add(new ObservableCardBundle(card));
+                    }
+                    //顺便查找所有商品
+                    var goods = dc.CardBundles.Where(x=>x.Guid.StartsWith("SAMPLE")).OrderBy(x=>x.Price).ToList();
+                    if (goods.Count == 0) //如果没有，则自动生成
+                    {
+                        goods.Add(new CardBundle
+                        {
+                            Guid = "SAMPLE" + Guid.NewGuid().ToString(),  //所有模板商品的GUID前缀为SAMPLE，用户购买到的都是具有真实GUID的
+                            CardType = CardBundleType.Normal,
+                            Price = 20,
+                            CardsCount = 8,
+                            Background = "/Resources/cardback1.jpg"
+                        });
+                        goods.Add(new CardBundle
+                        {
+                            Guid = "SAMPLE" + Guid.NewGuid().ToString(),
+                            CardType = CardBundleType.Rare,
+                            Price = 50,
+                            CardsCount = 8,
+                            Background = "/Resources/cardback2.jpg"
+                        });
+                        goods.Add(new CardBundle
+                        {
+                            Guid = "SAMPLE" + Guid.NewGuid().ToString(),
+                            CardType = CardBundleType.Legend,
+                            Price = 100,
+                            CardsCount = 8,
+                            Background = "/Resources/cardback3.jpg"
+                        });
+                        dc.CardBundles.AddRange(goods);
+                        dc.SaveChanges();
+                    }
+                    foreach (var good in goods)
+                    {
+                        var g = new ObservableCardBundle(good);
+                        g.PurchaseCommand = new RelayCommand<object>(PurchaseCard);
+                        Goods.Add(g);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex);
+                }
+            }
+        }
+
+        public MainWindowViewModel(ILogger _logger):this()
         {
             logger = _logger;
-            //获取当前用户，查找其资产和所有的卡包，卡包赋给bundles
+        }
+
+        public IRelayCommand PurchaseCommand { get;private set; }
+        private void PurchaseCard(object obj)
+        {
+            CardHolder cardHolder = obj as CardHolder;
+            //判断个人资产是否足够购买
+            if (Capital - cardHolder.Price < 0.01)
+            {
+                MessageBox.Show("您没有足够的现金购买该卡包，请选择别的卡包或者切换账号！", "提示");
+                return;
+            }
+            Capital -= cardHolder.Price;
+            App.Container.Resolve<MainWindow>().StartAssetChangeAnimation(Variable);
+
+            using (var dc = new MyDbContext())
+            {
+                //新建要购买的卡包
+                var cardBundle = new CardBundle
+                {
+                    Guid = Guid.NewGuid().ToString(),
+                    CardType = cardHolder.BundleType,
+                    Price = cardHolder.Price,
+                    CardsCount = 8,
+                    Background = cardHolder.Source.ToString()
+                };
+                //添加到卡包表和已购卡包表
+                dc.CardBundles.Add(cardBundle);
+                dc.PurchasedCardBundles.Add(new PurchasedCardBundle
+                {
+                    AccountID = UserSession.LoginedUser.Account,
+                    CardBundleID = cardBundle.Guid
+                });
+                //更新用户的资产
+                UserSession.UpdateUserAsset(Capital);
+                dc.SaveChanges();
+                //添加到已购卡包集合（UI）
+                Purchased.Add(new ObservableCardBundle(cardBundle));
+            }
         }
     }
 }

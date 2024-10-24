@@ -30,12 +30,13 @@ namespace ScratchTicket.ORM
     public class CardBundle
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        public string Guid { get; set; }
         [Required]
         public CardBundleType CardType { get; set; }
         [Required]
-        public int TotalCount { get; set; }
+        public int CardsCount { get; set; }
+        [Required]
+        public double Price { get; set; }
         public string Background { get; set; }
     }
 
@@ -46,6 +47,6 @@ namespace ScratchTicket.ORM
         public string AccountID { get; set; }
         [Key]
         [Column(Order = 2)]
-        public int CardBundleID { get; set; }
+        public string CardBundleID { get; set; }
     }
 }

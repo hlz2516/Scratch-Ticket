@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -52,11 +53,7 @@ namespace ScratchTicket.ORM
             cardBundle = _cardBundle;
         }
 
-        public int ID
-        {
-            get => cardBundle.ID;
-            set => SetProperty(cardBundle.ID, value, cardBundle,(u,p)=>u.ID = p);
-        }
+        public string Guid { get => cardBundle.Guid; }
 
         public CardBundleType CardType
         {
@@ -64,10 +61,16 @@ namespace ScratchTicket.ORM
             set => SetProperty(cardBundle.CardType, value, cardBundle, (u, p) => u.CardType = p);
         }
 
-        public int TotalCount
+        public int CardsCount
         {
-            get => cardBundle.TotalCount;
-            set => SetProperty(cardBundle.TotalCount, value, cardBundle, (u, p) => u.TotalCount = p);
+            get => cardBundle.CardsCount;
+            set => SetProperty(cardBundle.CardsCount, value, cardBundle, (u, p) => u.CardsCount = p);
+        }
+
+        public double Price
+        {
+            get => cardBundle.Price;
+            set => SetProperty(cardBundle.Price, value, cardBundle, (u, p) => u.Price = p);
         }
 
         public string Background
@@ -75,5 +78,7 @@ namespace ScratchTicket.ORM
             get => cardBundle.Background; 
             set => SetProperty(cardBundle.Background, value, cardBundle, (u, p) => u.Background = p);
         }
+
+        public IRelayCommand PurchaseCommand { get; set; }
     }
 }
