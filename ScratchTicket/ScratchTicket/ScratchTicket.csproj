@@ -124,6 +124,7 @@
     </Compile>
     <Compile Include="Converters\String2BundleTypeConverter.cs" />
     <Compile Include="Converters\VariableConverter.cs" />
+    <Compile Include="Helpers\CursorSafeHandle.cs" />
     <Compile Include="OpenBlindBox.xaml.cs">
       <DependentUpon>OpenBlindBox.xaml</DependentUpon>
     </Compile>
@@ -187,6 +188,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Content Include="Resources\bookshelves.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\cardback1.bmp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\cardback1.jpg">

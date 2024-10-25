@@ -8,7 +8,13 @@
         mc:Ignorable="d"
         Title="Test" Height="450" Width="800">
     <Grid>
-        <Button x:Name="RenderButton" Content="Render Me!" Width="100" Height="50" Click="RenderButton_Click"/>
-        <Image x:Name="RenderedImage" Width="200" Height="100" VerticalAlignment="Top" Margin="10,60,0,0" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="175*"/>
+            <RowDefinition Height="137*"/>
+            <RowDefinition Height="123*"/>
+        </Grid.RowDefinitions>
+        <Image x:Name="RenderedImage" Height="100" VerticalAlignment="Top" Margin="305,60,295,0" Source="/Resources/cardback1.bmp"  />
+        <Button x:Name="RenderButton" Grid.Row="1" Content="Render Me!" Click="RenderButton_Click" Margin="350,48,350,66" />
+        <Button x:Name="ChgCursorButton" Grid.Row="2" Click="ChgCursorButton_Click" Margin="350,56,350,32" />
     </Grid>
 </Window>
