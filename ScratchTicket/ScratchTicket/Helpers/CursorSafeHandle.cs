@@ -24,19 +24,19 @@ namespace ScratchTicket.Helpers
             return true;
         }
 
-        public static Bitmap CreateCustomRegion()
+        public static Bitmap CreateRectRegion(int side)
         {
-            var backBitmap = new Bitmap(20, 20);
-            using (Graphics graphics = Graphics.FromImage(backBitmap))
+            var backBitmap = new Bitmap(side, side);
+            var tmpBmp = new Bitmap(side*2, side*2);
+            using (Graphics graphics = Graphics.FromImage(tmpBmp))
             {
                 // 设置背景色
                 graphics.Clear(System.Drawing.Color.Transparent);
-                // 绘制圆
-                Brush greenBrush = new SolidBrush(Color.Green);
-                graphics.FillRectangle(greenBrush, 0, 0, backBitmap.Width, backBitmap.Height);
-                graphics.Dispose();
+                // 绘制矩形
+                Brush greenBrush = new SolidBrush(Color.DarkGray);
+                graphics.FillRectangle(greenBrush, backBitmap.Width, backBitmap.Height, backBitmap.Width, backBitmap.Height);
             }
-            return backBitmap;
+            return tmpBmp;
         }
     }
 

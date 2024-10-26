@@ -110,11 +110,7 @@ namespace ScratchTicket
 
         private void ChgCursorButton_Click(object sender, RoutedEventArgs e)
         {
-            var bmp = CursorSafeHandle.CreateCustomRegion();
-            var handle = bmp.GetHicon();
-            var c = new CursorSafeHandle(handle, true);
-            var cursor = CursorInteropHelper.Create(c);
-            RenderedImage.Cursor = cursor;
+                
         }
     }
 }

@@ -121,7 +121,6 @@ namespace ScratchTicket
     public class MainWindowViewModel : ObservableObject
     {
         private readonly ILogger logger;
-
         private double capital;
         public double Capital
         {

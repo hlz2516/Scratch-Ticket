@@ -13,7 +13,10 @@
             <RowDefinition Height="137*"/>
             <RowDefinition Height="123*"/>
         </Grid.RowDefinitions>
-        <Image x:Name="RenderedImage" Height="100" VerticalAlignment="Top" Margin="305,60,295,0" Source="/Resources/cardback1.bmp"  />
+        <Canvas Grid.Row="0">
+            <Image x:Name="RenderedImage" Width="80" Source="/Resources/cardback1.bmp" />
+            <ctrl:BlindBox x:Name="bb" Width="50" Height="30" Canvas.Left="0" Canvas.Top="0" />
+        </Canvas>
         <Button x:Name="RenderButton" Grid.Row="1" Content="Render Me!" Click="RenderButton_Click" Margin="350,48,350,66" />
         <Button x:Name="ChgCursorButton" Grid.Row="2" Click="ChgCursorButton_Click" Margin="350,56,350,32" />
     </Grid>

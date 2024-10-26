@@ -27,6 +27,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -122,8 +123,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Config.settings</DependentUpon>
     </Compile>
+    <Compile Include="Controls\BlindBox.xaml.cs">
+      <DependentUpon>BlindBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\String2BundleTypeConverter.cs" />
     <Compile Include="Converters\VariableConverter.cs" />
+    <Compile Include="Helpers\Common.cs" />
     <Compile Include="Helpers\CursorSafeHandle.cs" />
     <Compile Include="OpenBlindBox.xaml.cs">
       <DependentUpon>OpenBlindBox.xaml</DependentUpon>
@@ -131,6 +136,10 @@
     <Compile Include="Test.xaml.cs">
       <DependentUpon>Test.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\BlindBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\CardHolder.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
