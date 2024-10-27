@@ -149,7 +149,7 @@ namespace ScratchTicket
                     CardType = cardHolder.BundleType,
                     Price = cardHolder.Price,
                     CardsCount = 8,
-                    Background = cardHolder.Source.ToString()
+                    Background = cardHolder.Source.ToString(),
                 };
                 //添加到卡包表和已购卡包表
                 dc.CardBundles.Add(cardBundle);
@@ -162,7 +162,9 @@ namespace ScratchTicket
                 UserSession.UpdateUserAsset(Capital);
                 dc.SaveChanges();
                 //添加到已购卡包集合（UI）
-                Purchased.Add(new ObservableCardBundle(cardBundle));
+                var obCard = new ObservableCardBundle(cardBundle);
+                obCard.OpenBlindBoxCommand = new RelayCommand<object>(OpenBlindBox);
+                Purchased.Add(obCard);
             }
         }
     
