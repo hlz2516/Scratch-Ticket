@@ -126,6 +126,9 @@
     <Compile Include="Controls\BlindBox.xaml.cs">
       <DependentUpon>BlindBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Wallet.xaml.cs">
+      <DependentUpon>Wallet.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\String2BundleTypeConverter.cs" />
     <Compile Include="Converters\VariableConverter.cs" />
     <Compile Include="Helpers\Common.cs" />
@@ -141,6 +144,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\CardHolder.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Wallet.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

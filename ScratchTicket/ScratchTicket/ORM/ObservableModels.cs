@@ -80,5 +80,6 @@ namespace ScratchTicket.ORM
         }
 
         public IRelayCommand PurchaseCommand { get; set; }
+        public IRelayCommand OpenBlindBoxCommand { get; set; }
     }
 }

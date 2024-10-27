@@ -35,6 +35,7 @@ namespace ScratchTicket.Controls
         public BlindBox()
         {
             InitializeComponent();
+            container.DataContext = this;
             //设置光标
             var bmp = CursorSafeHandle.CreateRectRegion(range);
             var handle = bmp.GetHicon();

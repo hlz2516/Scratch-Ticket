@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Autofac;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using NLog;
 using ScratchTicket.Controls;
 using ScratchTicket.Helpers;
@@ -7,10 +9,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using Autofac;
-using CommunityToolkit.Mvvm.Input;
 
 namespace ScratchTicket
 {
@@ -19,102 +17,15 @@ namespace ScratchTicket
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Storyboard storyboard1;
-        public event Action<double> AssetChanged;
-
         public MainWindow()
         {
             InitializeComponent();
-            AssetChangeAnimationInit();
-            //AssetChanged += MainWindow_AssetChanged;
             this.DataContext = App.Container.Resolve<MainWindowViewModel>();
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
             App.Current.Shutdown();
-        }
-
-        private void AssetChangeAnimationInit()
-        {
-            storyboard1 = new Storyboard();
-            var duration = TimeSpan.FromMilliseconds(250);
-            DoubleAnimation doubleAnimation1 = new DoubleAnimation();
-            doubleAnimation1.Duration = new Duration(duration);
-            storyboard1.Children.Add(doubleAnimation1);
-
-            DoubleAnimation doubleAnimation2 = new DoubleAnimation();
-            storyboard1.Children.Add(doubleAnimation2);
-            doubleAnimation2.BeginTime = duration;
-            doubleAnimation2.Duration = duration;
-
-            Storyboard.SetTarget(doubleAnimation1, txtVar);
-            Storyboard.SetTargetProperty(doubleAnimation1, new PropertyPath("(Canvas.Top)"));
-            Storyboard.SetTarget(doubleAnimation2, txtVar);
-            Storyboard.SetTargetProperty(doubleAnimation2, new PropertyPath("(Canvas.Top)"));
-
-            DoubleAnimation doubleAnimation3 = new DoubleAnimation();
-            doubleAnimation3.From = 0; // 开始位置
-            doubleAnimation3.To = 1; // 结束位置
-            doubleAnimation3.BeginTime = TimeSpan.FromMilliseconds(0);
-            doubleAnimation3.Duration = new Duration(duration);
-            storyboard1.Children.Add(doubleAnimation3);
-
-            DoubleAnimation doubleAnimation4 = new DoubleAnimation();
-            doubleAnimation4.From = 1; // 开始位置
-            doubleAnimation4.To = 0; // 结束位置
-            doubleAnimation4.BeginTime = duration;
-            doubleAnimation4.Duration = duration;
-            storyboard1.Children.Add(doubleAnimation4);
-
-            Storyboard.SetTarget(doubleAnimation3, cvs1);
-            Storyboard.SetTargetProperty(doubleAnimation3, new PropertyPath("Opacity"));
-            Storyboard.SetTarget(doubleAnimation4, cvs1);
-            Storyboard.SetTargetProperty(doubleAnimation4, new PropertyPath("Opacity"));
-        }
-
-        private bool isSubscribed = false;
-        private EventHandler eventHandler = null;
-        public void StartAssetChangeAnimation(double variable)
-        {
-            DoubleAnimation doubleAnimation1 = storyboard1.Children[0] as DoubleAnimation;
-            DoubleAnimation doubleAnimation2 = storyboard1.Children[1] as DoubleAnimation;
-
-            if (eventHandler != null)
-            {
-                doubleAnimation1.Completed -= eventHandler;
-            }
-            eventHandler = (sender, eve) =>
-            {
-                AssetChanged?.Invoke(variable);
-            };
-            doubleAnimation1.Completed += eventHandler;
-
-            if (variable > 0)
-            {
-                txtVar.Foreground = new SolidColorBrush(Colors.LightGreen);
-                doubleAnimation1.From = cvs1.ActualHeight; // 开始位置
-                doubleAnimation1.To = (cvs1.ActualHeight - txtVar.ActualHeight) / 2; // 结束位置
-            }
-            else if (variable < 0)
-            {
-                txtVar.Foreground = new SolidColorBrush(Colors.Red);
-                doubleAnimation1.From = -txtVar.ActualHeight; // 开始位置
-                doubleAnimation1.To = (cvs1.ActualHeight - txtVar.ActualHeight) / 2; // 结束位置
-            }
-
-            if (variable > 0)
-            {
-                doubleAnimation2.From = (cvs1.ActualHeight - txtVar.ActualHeight) / 2; // 开始位置
-                doubleAnimation2.To = -txtVar.ActualHeight; // 结束位置
-            }
-            else if (variable < 0)
-            {
-                doubleAnimation2.From = (cvs1.ActualHeight - txtVar.ActualHeight) / 2; // 开始位置
-                doubleAnimation2.To = cvs1.ActualHeight; // 结束位置
-            }
-
-            storyboard1.Begin();
         }
     }
 
@@ -127,20 +38,18 @@ namespace ScratchTicket
             get { return capital; }
             set 
             {
-                if (Math.Abs(capital -value) > 0.01)
-                {
-                    Variable = value - capital;
-                }
                 SetProperty(ref capital, value); 
             }
         }
 
-        private double variable;
-        public double Variable
+        private string userName;
+
+        public string UserName
         {
-            get => variable;
-            set => SetProperty(ref variable, value);
+            get { return userName; }
+            set { SetProperty(ref userName, value); }
         }
+
 
         public ObservableCollection<ObservableCardBundle> Purchased { get; private set; }
         public ObservableCollection<ObservableCardBundle> Goods { get; private set; }
@@ -151,7 +60,9 @@ namespace ScratchTicket
             Purchased = new ObservableCollection<ObservableCardBundle>();
             //绑定命令
             PurchaseCommand = new RelayCommand<object>(PurchaseCard);
+            OpenBlindBoxCommand = new RelayCommand<object>(OpenBlindBox);
             var loginedUser = UserSession.LoginedUser;
+            UserName = loginedUser.Name;
             Capital = loginedUser.Capital;
             using (var dc = new MyDbContext())
             {
@@ -162,7 +73,9 @@ namespace ScratchTicket
                         .Join(dc.CardBundles, p => p.CardBundleID, c => c.Guid, (p, c) => c);
                     foreach (var card in cardBundles)
                     {
-                        Purchased.Add(new ObservableCardBundle(card));
+                        var obCard = new ObservableCardBundle(card);
+                        obCard.OpenBlindBoxCommand = new RelayCommand<object>(OpenBlindBox);
+                        Purchased.Add(obCard);
                     }
                     //顺便查找所有商品
                     var goods = dc.CardBundles.Where(x=>x.Guid.StartsWith("SAMPLE")).OrderBy(x=>x.Price).ToList();
@@ -225,7 +138,7 @@ namespace ScratchTicket
                 return;
             }
             Capital -= cardHolder.Price;
-            App.Container.Resolve<MainWindow>().StartAssetChangeAnimation(Variable);
+            //App.Container.Resolve<MainWindow>().StartAssetChangeAnimation(Variable);
 
             using (var dc = new MyDbContext())
             {
@@ -251,6 +164,13 @@ namespace ScratchTicket
                 //添加到已购卡包集合（UI）
                 Purchased.Add(new ObservableCardBundle(cardBundle));
             }
+        }
+    
+        public IRelayCommand OpenBlindBoxCommand { get; private set; }
+        private void OpenBlindBox(object obj)
+        {
+            CardHolder cardHolder = obj as CardHolder;
+            System.Diagnostics.Debug.WriteLine(cardHolder.Guid);
         }
     }
 }

@@ -17,17 +17,22 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="698*"/>
-            <RowDefinition Height="87*"/>
+            <RowDefinition Height="76*"/>
+            <RowDefinition Height="709*"/>
         </Grid.RowDefinitions>
-        <Grid>
+        <DockPanel Height="40">
+            <TextBlock x:Name="tbUserName" Text="{Binding UserName}" FontSize="32" DockPanel.Dock="Left" />
+            <ctrls:Wallet x:Name="wallet" Width="400" DockPanel.Dock="Right"  Money="{Binding Capital}"  />
+            <Rectangle />
+        </DockPanel>
+        <Grid Grid.Row="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="135*"/>
-                <RowDefinition Height="82*"/>
-                <RowDefinition Height="138*"/>
-                <RowDefinition Height="63*"/>
-                <RowDefinition Height="143*"/>
                 <RowDefinition Height="137*"/>
+                <RowDefinition Height="83*"/>
+                <RowDefinition Height="140*"/>
+                <RowDefinition Height="37*"/>
+                <RowDefinition Height="172*"/>
+                <RowDefinition Height="139*"/>
             </Grid.RowDefinitions>
             <Grid.Background>
                 <ImageBrush ImageSource="/Resources/bookshelves.png" />
@@ -44,7 +49,7 @@
                 <ctrls:CardHolder x:Name="midCard" Price="40" Source="/Resources/cardback2.jpg" Width="100"  />
                 <ctrls:CardHolder x:Name="highCard" Price="60" Source="/Resources/cardback3.jpg" Width="100" />
             </UniformGrid>-->
-            <ItemsControl x:Name="icGoods" Grid.Row="2" Margin="50,0,50,0" ItemsSource="{Binding Goods}">
+            <ItemsControl x:Name="icGoods" Grid.Row="1" Margin="50,83,50,0" ItemsSource="{Binding Goods}" Grid.RowSpan="2">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <UniformGrid Rows="1" IsItemsHost="True" />
@@ -66,27 +71,22 @@
             <ItemsControl x:Name="icPurchased" Grid.Row="4" Margin="100,0,100,0" ItemsSource="{Binding Purchased}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <UniformGrid  Rows="1" IsItemsHost="True" />
+                        <UniformGrid Rows="1" IsItemsHost="True" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <ctrls:CardHolder Width="100" Guid="{Binding Guid}" Source="{Binding Background}" HidePrice="True" />
+                        <ctrls:CardHolder Width="100" Guid="{Binding Guid}" Source="{Binding Background}" HidePrice="True">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="CardDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding OpenBlindBoxCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ctrls:CardHolder}}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </ctrls:CardHolder>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-
         </Grid>
-        <StackPanel Orientation="Horizontal" Grid.Row="1" VerticalAlignment="Center">
-            <Image Source="/Resources/Coin.png" Width="64" Height="64" Margin="20 0 4 0" />
-            <TextBlock x:Name="tbAssets" Text="{Binding Capital}" FontSize="32" FontWeight="Bold" Foreground="DarkOrange" VerticalAlignment="Center" Margin="0 0 10 0" />
-            <Canvas x:Name="cvs1" Width="400" Height="{Binding ElementName=tbAssets,Path=ActualHeight}" Opacity="0" >
-                <TextBlock x:Name="txtVar" Text="{Binding Variable,Converter={StaticResource ResourceKey=var}}" Canvas.Left="0" Canvas.Top="{Binding ElementName=cvs1,Path=ActualHeight}" FontSize="32" Foreground="LightGreen">
-                    <!--<TextBlock.RenderTransform>
-                        <TranslateTransform x:Name="tt" X="0" Y="0" />
-                    </TextBlock.RenderTransform>-->
-                </TextBlock>
-            </Canvas>
-        </StackPanel>
+
     </Grid>
 </Window>

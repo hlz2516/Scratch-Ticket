@@ -8,16 +8,28 @@
              mc:Ignorable="d" d:DataContext="{d:DesignInstance Type=local:CardHolder}"
              d:DesignHeight="500" d:DesignWidth="300">
     <UserControl.Resources>
-        <Style x:Key="cardback" TargetType="Border">
+        <ControlTemplate TargetType="Button" x:Key="CornerRadiusButton">
+            <Border Background="{TemplateBinding Background}" CornerRadius="12" 
+                    BorderBrush="{TemplateBinding BorderBrush}" 
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    Cursor="{TemplateBinding Cursor}"
+                    >
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+        </ControlTemplate>
+        <Style x:Key="cardback" TargetType="Button">
             <Setter Property="Cursor" Value="Arrow"/>
             <Setter Property="BorderBrush" Value="Cornsilk" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="12" />
             <!-- 默认光标 -->
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Cursor" Value="Hand"/>
                     <!-- 悬停时更改光标 -->
+                </Trigger>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderThickness" Value="2" />
+                    <Setter Property="BorderBrush" Value="Orange" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -28,13 +40,13 @@
             <RowDefinition Height="5*"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Border x:Name="card" Style="{StaticResource cardback}" MouseDown="Border_MouseDown">
-            <Border.Background>
+        <Button x:Name="card" Click="card_MouseClick" MouseDoubleClick="card_MouseDoubleClick" Template="{StaticResource CornerRadiusButton}" Style="{StaticResource cardback}">
+            <Button.Background>
                 <ImageBrush ImageSource="{Binding Source}" />
-            </Border.Background>
-        </Border>
+            </Button.Background>
+        </Button>
         <Viewbox x:Name="priceContainer" Grid.Row="1" Stretch="Uniform" Visibility="{Binding HidePrice,Converter={StaticResource ResourceKey=b2v}}">
-            <TextBlock Grid.Row="1" Text="{Binding Price,StringFormat=¥{0:F2}}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="DarkOrange" />
+            <TextBlock Text="{Binding Price,StringFormat=¥{0:F2}}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="DarkOrange" />
         </Viewbox>
     </Grid>
 </UserControl>

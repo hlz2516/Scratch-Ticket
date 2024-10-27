@@ -75,6 +75,8 @@ namespace ScratchTicket.Controls
             set { SetValue(HidePriceProperty, value); }
         }
 
+        public int ClickTimes { get; set; }
+
         // Using a DependencyProperty as the backing store for HidePrice.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty HidePriceProperty =
             DependencyProperty.Register("HidePrice", typeof(bool), typeof(CardHolder), new PropertyMetadata(false,new PropertyChangedCallback(HidePriceChanged)));
@@ -104,13 +106,30 @@ namespace ScratchTicket.Controls
             remove { RemoveHandler(CardClickEvent, value); }
         }
 
+        // 定义一个 RoutedEvent
+        public static readonly RoutedEvent CardDoubleClickEvent = EventManager.RegisterRoutedEvent(
+            "CardDoubleClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(CardHolder));
+
+        // 提供添加和移除事件处理程序的方法
+        public event RoutedEventHandler CardDoubleClick
+        {
+            add { AddHandler(CardDoubleClickEvent, value); }
+            remove { RemoveHandler(CardDoubleClickEvent, value); }
+        }
+
         public CardHolder()
         {
             InitializeComponent();
             container.DataContext = this;
         }
 
-        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
+        private void card_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            RoutedEventArgs args = new RoutedEventArgs(CardDoubleClickEvent);
+            RaiseEvent(args);
+        }
+
+        private void card_MouseClick(object sender, RoutedEventArgs e)
         {
             RoutedEventArgs args = new RoutedEventArgs(CardClickEvent);
             RaiseEvent(args);

@@ -11,7 +11,7 @@
              MouseUp="UserControl_MouseUp"
              MouseDoubleClick="UserControl_MouseDoubleClick"
              d:DesignHeight="40" d:DesignWidth="80">
-    <Grid>
+    <Grid x:Name="container">
         <Image x:Name="img" />
     </Grid>
 </UserControl>
